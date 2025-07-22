@@ -2,6 +2,7 @@ use anyhow::anyhow;
 
 #[derive(Debug, Clone)]
 pub enum Command {
+    Empty,
     Exit,
     Echo(String),
     Ls,
@@ -17,6 +18,9 @@ impl TryFrom<&str> for Command {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let split_value: Vec<&str> = value.split_whitespace().collect();
+        if split_value.is_empty() || split_value[0].is_empty() {
+            return Ok(Command::Empty);
+        }
         match split_value[0] {
             "exit" => Ok(Command::Exit),
             "ls" => Ok(Command::Ls),
