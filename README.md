@@ -1,6 +1,6 @@
 # rshell
 
-A simple shell implementation written in Rust, created as a learning exercise.
+A simple shell implementation.
 
 ## Building and Running
 
