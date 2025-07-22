@@ -10,7 +10,7 @@ use tokio::{
     task::JoinHandle,
 };
 
-use crate::helpers::pwd;
+use crate::helpers::{prompt, pwd};
 
 fn spawn_user_input_handler() -> JoinHandle<CrateResult<()>> {
     tokio::spawn(async {
@@ -20,8 +20,8 @@ fn spawn_user_input_handler() -> JoinHandle<CrateResult<()>> {
         let mut reader = tokio::io::BufReader::new(stdin).lines();
         let mut stdout = tokio::io::BufWriter::new(stdout);
         stdout.write(b"Shell session started\n").await?;
-        stdout.write(pwd()?.as_bytes()).await?;
-        stdout.write(b"\n>").await?;
+        stdout.write(prompt()?.as_bytes()).await?;
+        stdout.write_all(b"\n\x1b[1;32m> \x1b[0m").await?;
         stdout.flush().await?;
         while let Ok(Some(line)) = reader.next_line().await {
             let command = handle_new_line(&line).await;
@@ -40,8 +40,8 @@ fn spawn_user_input_handler() -> JoinHandle<CrateResult<()>> {
             } else {
                 eprintln!("Error parsing command: {}", command.err().unwrap());
             }
-            stdout.write(pwd()?.as_bytes()).await?;
-            stdout.write(b"\n>").await?;
+            stdout.write(prompt()?.as_bytes()).await?;
+            stdout.write_all(b"\n\x1b[1;32m> \x1b[0m").await?;
             stdout.flush().await?;
         }
 
